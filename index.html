@@ -134,13 +134,17 @@
     }
 
     // Swipe detection variables
-    let startX, endX;
+    let startX, endX, swipeThreshold = 50;
 
     // Add touch event listeners for swipe detection on card container
     const cardContainer = document.getElementById('cardContainer');
     
     cardContainer.addEventListener('touchstart', function(event) {
         startX = event.touches[0].clientX;
+    });
+
+    cardContainer.addEventListener('touchmove', function(event) {
+        event.preventDefault(); // Prevent scrolling while swiping
     });
 
     cardContainer.addEventListener('touchend', function(event) {
@@ -151,7 +155,8 @@
     function handleSwipe() {
         const deltaX = endX - startX;
 
-        if (Math.abs(deltaX) > 50) {
+        // Check if swipe distance is large enough to count as a swipe
+        if (Math.abs(deltaX) > swipeThreshold) {
             if (deltaX < 0) {
                 // Swiped left (next card)
                 showNextCard();
@@ -177,7 +182,7 @@
     }
 
     function updateCard() {
-        // For now, reset the scratch area when a card is changed
+        // Reset the scratch area when a card is changed
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#999';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
