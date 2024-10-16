@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scratch-Off Card Swipe</title>
+    <title>Scratch-Off Card</title>
     <style>
         body {
             margin: 0;
@@ -14,26 +14,25 @@
             background-color: #f0f0f0;
         }
 
-        /* Card container with swipeable area */
+        /* Card container */
         .cardContainer {
             width: 250px;
             height: 350px;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: absolute;
+            position: relative;
             overflow: hidden;
-            transition: transform 0.4s ease-in-out;
             padding: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* Scratchable area now smaller and centered */
+        /* Scratchable area (smaller now) */
         .scratchArea {
             width: 200px;
-            height: 300px;
+            height: 150px;
             background-color: #ddd;
             border-radius: 10px;
             position: relative;
@@ -50,11 +49,9 @@
 </head>
 <body>
 
-<div id="cardDeck">
-    <div class="cardContainer" id="cardContainer">
-        <div class="scratchArea">
-            <canvas id="scratchCanvas" width="200" height="300"></canvas>
-        </div>
+<div class="cardContainer">
+    <div class="scratchArea">
+        <canvas id="scratchCanvas" width="200" height="150"></canvas>
     </div>
 </div>
 
@@ -62,19 +59,11 @@
     const canvas = document.getElementById('scratchCanvas');
     const ctx = canvas.getContext('2d');
     let isDrawing = false;
-    let currentCardIndex = 0;
-
-    // Cards data (simulating 3 cards for now)
-    const cardDeck = [
-        { id: 1, content: 'Card 1' },
-        { id: 2, content: 'Card 2' },
-        { id: 3, content: 'Card 3' }
-    ];
 
     // Initialize canvas with gray cover
     ctx.fillStyle = '#999';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = 56; // Keep the thicker line width
+    ctx.lineWidth = 56; // Thicker line width for scratching
 
     // Mouse and touch event handlers for scratching
     canvas.addEventListener('mousedown', startDrawing);
@@ -131,61 +120,6 @@
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
-    }
-
-    // Swipe detection variables
-    let startX, endX, swipeThreshold = 50;
-
-    // Add touch event listeners for swipe detection on card container
-    const cardContainer = document.getElementById('cardContainer');
-    
-    cardContainer.addEventListener('touchstart', function(event) {
-        startX = event.touches[0].clientX;
-    });
-
-    cardContainer.addEventListener('touchmove', function(event) {
-        event.preventDefault(); // Prevent scrolling while swiping
-    });
-
-    cardContainer.addEventListener('touchend', function(event) {
-        endX = event.changedTouches[0].clientX;
-        handleSwipe();
-    });
-
-    function handleSwipe() {
-        const deltaX = endX - startX;
-
-        // Check if swipe distance is large enough to count as a swipe
-        if (Math.abs(deltaX) > swipeThreshold) {
-            if (deltaX < 0) {
-                // Swiped left (next card)
-                showNextCard();
-            } else {
-                // Swiped right (previous card)
-                showPreviousCard();
-            }
-        }
-    }
-
-    function showNextCard() {
-        if (currentCardIndex < cardDeck.length - 1) {
-            currentCardIndex++;
-            updateCard();
-        }
-    }
-
-    function showPreviousCard() {
-        if (currentCardIndex > 0) {
-            currentCardIndex--;
-            updateCard();
-        }
-    }
-
-    function updateCard() {
-        // Reset the scratch area when a card is changed
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#999';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 </script>
 
