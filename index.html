@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scratch-Off Simulator</title>
+    <title>Scratch-Off Card</title>
     <style>
         body {
             margin: 0;
@@ -14,24 +14,30 @@
             background-color: #f0f0f0;
         }
 
-        #scratchArea {
-            width: 300px;
-            height: 300px;
-            background-color: #ccc;
+        /* Card container to hold the scratch area */
+        #cardContainer {
+            width: 250px; /* Card width */
+            height: 350px; /* Card height */
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             position: relative;
+            overflow: hidden;
         }
 
+        /* Scratchable area */
         canvas {
             position: absolute;
             top: 0;
             left: 0;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
-<div id="scratchArea">
-    <canvas id="scratchCanvas" width="300" height="300"></canvas>
+<div id="cardContainer">
+    <canvas id="scratchCanvas" width="250" height="350"></canvas>
 </div>
 
 <script>
@@ -90,7 +96,7 @@
         }
 
         ctx.globalCompositeOperation = 'destination-out'; // Make the scratch effect
-        ctx.lineWidth = 50;
+        ctx.lineWidth = 56;
         ctx.lineCap = 'round';
         ctx.strokeStyle = '#000'; // This won’t matter since it's erasing
 
