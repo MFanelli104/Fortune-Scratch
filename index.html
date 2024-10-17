@@ -4,7 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scratch-Off Card</title>
-    <style>
+</head>
+<body>
+  
+<div class="centerWrapper">
+    <div class="cardGroup">
+      <div class="backgroundRectangle">
+        <p>Title</p>
+      </div>
+
+      <div class="cardContainer">
+        <div class="scratchArea">
+            <canvas id="scratchCanvas" width="214" height="412"></canvas>
+            <div id="emoji" class="emoji"></div> <!-- Emoji hidden under the canvas -->
+        </div>
+      </div>
+       
+     </div>
+    <button id="refreshBtn" class="refreshBtn">New Card</button>
+</div>
+  
+<div class="cardContainer">
+    <div class="scratchArea">
+        <canvas id="scratchCanvas" width="214" height="412"></canvas>
+        <div id="emoji" class="emoji"></div> <!-- Emoji hidden under the canvas -->
+    </div>
+</div>
+  
+<style>
         body {
             margin: 0;
             display: flex;
@@ -14,32 +41,76 @@
             background-color: #f0f0f0;
             flex-direction: column;
         }
+      
+/* Wrapper to center all elements (background, scratch-off card, and button) */
+.centerWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    position: relative;
+}
 
-        /* Card container */
-        .cardContainer {
-            width: 250px;
-            height: 350px;
-            background-color: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            position: relative;
-            overflow: hidden;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            transform: translateX(-100vw) rotate(0deg); /* Start off-screen left */
-            opacity: 0;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
-        }
+/* Group the background and scratch card together */
+.cardGroup {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-        /* Scratchable area (smaller now) */
+/* Background rectangle behind the scratch-off card */
+.backgroundRectangle {
+    width: 254px; /* Same as card width */
+    height: 452px; /* Same as card height */
+    border-radius: 16px; /* Same corner radius */
+    background-color: #f0f0f0; /* Same background as canvas */
+    border: 4px solid rgba(51, 51, 51, 0.08); /* 4px stroke with #333 at 8% opacity */
+    position: absolute; /* Positioned behind the card */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 0; /* Make sure it appears behind the card */
+}
+
+/* Style for the title text inside the rectangle */
+.backgroundRectangle p {
+    font-size: 20px;
+    color: black;
+    margin: 0; /* Remove default margin */
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Scratch Card with animation */
+.cardContainer {
+    width: 254px; /* Same as card width */
+    height: 452px; /* Same as card height */
+    border-radius: 16px; /* Same corner radius */
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    padding: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transform: translateX(-100vw); /* Start off-screen left */
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
+    z-index: 1; /* Make sure it appears above the background */
+}
+
+        /* Updated Scratch Off Area */
         .scratchArea {
-            width: 200px;
-            height: 300px;
-            background-color: #ddd;
-            border-radius: 999px;
+            width: 214px; /* Updated width */
+            height: 412px; /* Updated height */
+            border-top-left-radius: 999px; /* Top left corner radius */
+            border-top-right-radius: 999px; /* Top right corner radius */
+            border-bottom-left-radius: 4px; /* Bottom left corner radius */
+            border-bottom-right-radius: 4px; /* Bottom right corner radius */
             position: relative;
             overflow: hidden;
         }
@@ -54,6 +125,7 @@
 
         /* Emoji */
         .emoji {
+            background-color: lightblue;
             font-size: 64px;
             z-index: 0; /* Ensure emoji is under the canvas */
             position: absolute;
@@ -62,14 +134,14 @@
             align-items: center;
             width: 100%;
             height: 100%;
+            border-bottom-left-radius: 8px; /* Bottom left corner radius */
+            border-bottom-right-radius: 8px; /* Bottom right corner radius */
+            
         }
 
         /* Refresh button */
         .refreshBtn {
-            position: fixed; /* Make the button fixed */
-            bottom: 20px; /* Position it 20px from the bottom */
-            left: 50%; /* Center it horizontally */
-            transform: translateX(-50%); /* Adjust for centering */
+            margin-top: 36px;
             padding: 10px 20px;
             background-color: #007bff;
             color: white;
@@ -102,18 +174,9 @@
             opacity: 0;
             transition: opacity 0.5s ease;
         }
+      
+      
     </style>
-</head>
-<body>
-
-<div class="cardContainer">
-    <div class="scratchArea">
-        <canvas id="scratchCanvas" width="200" height="300"></canvas>
-        <div id="emoji" class="emoji"></div> <!-- Emoji hidden under the canvas -->
-    </div>
-</div>
-
-<button id="refreshBtn" class="refreshBtn" disabled>Refresh</button>
 
 <script>
     const canvas = document.getElementById('scratchCanvas');
@@ -193,7 +256,7 @@
     function clearScratchArea() {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear any existing scratch marks
         ctx.globalCompositeOperation = 'source-over'; // Reset to normal mode
-        ctx.fillStyle = '#999'; // Gray cover
+        ctx.fillStyle = '#333333'; // Dark Grey cover
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalCompositeOperation = 'destination-out'; // Scratch effect
     }
@@ -244,7 +307,7 @@
             pos = getTouchPosition(event);
         }
 
-        ctx.lineWidth = 56; // Thicker line width for smooth scratching
+        ctx.lineWidth = 64; // Thicker line width for smooth scratching
         ctx.lineCap = 'round';
         ctx.strokeStyle = '#000'; // Doesn't matter since it's erasing
 
