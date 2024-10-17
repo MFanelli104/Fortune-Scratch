@@ -9,15 +9,15 @@
   
 <div class="centerWrapper">
     <div class="cardGroup">
-      <div class="backgroundRectangle">
-        <p>Title</p>
-      </div>
-
       <div class="cardContainer">
         <div class="scratchArea">
             <canvas id="scratchCanvas" width="214" height="412"></canvas>
             <div id="emoji" class="emoji"></div> <!-- Emoji hidden under the canvas -->
         </div>
+      </div>
+      
+      <div class="backgroundRectangle">
+        
       </div>
        
      </div>
@@ -142,11 +142,12 @@
         /* Refresh button */
         .refreshBtn {
             margin-top: 36px;
-            padding: 10px 20px;
-            background-color: #007bff;
+            width: 150px;
+            height: 64px;
+            background-color: #333333;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 999px;
             cursor: pointer;
             opacity: 0.4; /* Disabled by default */
         }
@@ -160,7 +161,7 @@
         }
 
         .refreshBtn:hover:not(:disabled) {
-            background-color: #0056b3;
+            background-color: #4D4D4D;
         }
 
         /* Add a class for when the card is sliding in */
