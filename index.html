@@ -272,7 +272,7 @@
         erasedPixels = erased;
 
         // If more than 50% has been scratched, enable the refresh button
-        if (erasedPixels / totalPixels >= 0.5) {
+        if (erasedPixels / totalPixels >= 0.85) {
             refreshBtn.classList.add('active');
             refreshBtn.disabled = false;
         }
