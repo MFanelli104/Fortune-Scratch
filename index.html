@@ -12,6 +12,7 @@
             align-items: center;
             height: 100vh;
             background-color: #f0f0f0;
+            flex-direction: column;
         }
 
         /* Card container */
@@ -27,6 +28,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
 
         /* Scratchable area (smaller now) */
@@ -44,6 +46,43 @@
             top: 0;
             left: 0;
             border-radius: 10px;
+            z-index: 1; /* Ensure canvas is above the emoji */
+        }
+
+        /* Emoji */
+        .emoji {
+            font-size: 32px;
+            z-index: 0; /* Ensure emoji is under the canvas */
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Refresh button */
+        .refreshBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0.4; /* Disabled by default */
+        }
+
+        .refreshBtn:disabled {
+            cursor: not-allowed;
+        }
+
+        .refreshBtn.active {
+            opacity: 1.0; /* Fully visible when enabled */
+        }
+
+        .refreshBtn:hover:not(:disabled) {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -52,18 +91,48 @@
 <div class="cardContainer">
     <div class="scratchArea">
         <canvas id="scratchCanvas" width="200" height="300"></canvas>
+        <div id="emoji" class="emoji"></div> <!-- Emoji hidden under the canvas -->
     </div>
 </div>
+
+<button id="refreshBtn" class="refreshBtn" disabled>Refresh</button>
 
 <script>
     const canvas = document.getElementById('scratchCanvas');
     const ctx = canvas.getContext('2d');
+    const emojiContainer = document.getElementById('emoji');
+    const refreshBtn = document.getElementById('refreshBtn');
     let isDrawing = false;
+    let erasedPixels = 0;
+    const totalPixels = canvas.width * canvas.height;
+
+    // List of random emojis to display
+    const emojis = ['🎉', '🎁', '✨', '💎', '🍀', '🎲', '🏆', '❤️', '🍕', '🌈'];
+
+    // Function to get a random emoji
+    function getRandomEmoji() {
+        return emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    // Function to load a new card with a random emoji
+    function loadNewCard() {
+        const randomEmoji = getRandomEmoji();
+        emojiContainer.textContent = randomEmoji;
+        emojiContainer.style.zIndex = 0; // Ensure the emoji is beneath the canvas
+        clearScratchArea();
+        refreshBtn.classList.remove('active'); // Disable and reduce opacity
+        refreshBtn.disabled = true;
+        erasedPixels = 0; // Reset erased pixels count
+    }
 
     // Initialize canvas with gray cover
-    ctx.fillStyle = '#999';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = 56; // Thicker line width for scratching
+    function clearScratchArea() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear any existing scratch marks
+        ctx.globalCompositeOperation = 'source-over'; // Reset to normal mode
+        ctx.fillStyle = '#999'; // Gray cover
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalCompositeOperation = 'destination-out'; // Scratch effect
+    }
 
     // Mouse and touch event handlers for scratching
     canvas.addEventListener('mousedown', startDrawing);
@@ -111,16 +180,45 @@
             pos = getTouchPosition(event);
         }
 
-        ctx.globalCompositeOperation = 'destination-out'; // Scratch effect
-        ctx.lineWidth = 56; // Keep thicker line width
+        ctx.lineWidth = 56; // Thicker line width for smooth scratching
         ctx.lineCap = 'round';
-        ctx.strokeStyle = '#000'; // Doesn't matter, since it's erasing
+        ctx.strokeStyle = '#000'; // Doesn't matter since it's erasing
 
         ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
+
+        checkScratchProgress();
     }
+
+    // Check how much of the area has been scratched off
+    function checkScratchProgress() {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+        let erased = 0;
+
+        // Loop through all pixels to count erased (transparent) ones
+        for (let i = 3; i < pixels.length; i += 4) {
+            if (pixels[i] === 0) { // Alpha channel is 0 (transparent)
+                erased++;
+            }
+        }
+
+        erasedPixels = erased;
+
+        // If more than 50% has been scratched, enable the refresh button
+        if (erasedPixels / totalPixels >= 0.5) {
+            refreshBtn.classList.add('active');
+            refreshBtn.disabled = false;
+        }
+    }
+
+    // Event listener for the refresh button
+    refreshBtn.addEventListener('click', loadNewCard);
+
+    // Load the initial card
+    loadNewCard();
 </script>
 
 </body>
