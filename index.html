@@ -29,6 +29,9 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            transform: translateX(-100vw) rotate(0deg); /* Start off-screen left */
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.5s ease;
         }
 
         /* Scratchable area (smaller now) */
@@ -84,6 +87,18 @@
         .refreshBtn:hover:not(:disabled) {
             background-color: #0056b3;
         }
+
+        /* Add a class for when the card is sliding in */
+        .slideIn {
+            transform: translateX(0) rotate(var(--rotate-angle));
+            opacity: 1;
+        }
+
+        /* Add a class for when the card is fading out */
+        .fadeOut {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
     </style>
 </head>
 <body>
@@ -102,6 +117,7 @@
     const ctx = canvas.getContext('2d');
     const emojiContainer = document.getElementById('emoji');
     const refreshBtn = document.getElementById('refreshBtn');
+    const cardContainer = document.querySelector('.cardContainer');
     let isDrawing = false;
     let erasedPixels = 0;
     const totalPixels = canvas.width * canvas.height;
@@ -109,9 +125,46 @@
     // List of random emojis to display
     const emojis = ['🎉', '🎁', '✨', '💎', '🍀', '🎲', '🏆', '❤️', '🍕', '🌈'];
 
+    let previousAngleCategory = null;
+    let consecutiveCount = 0;
+
     // Function to get a random emoji
     function getRandomEmoji() {
         return emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    // Function to get a random angle with category restriction
+    function getRandomAngle() {
+        let angleCategory = null;
+        let angle = 0;
+
+        if (consecutiveCount >= 2) {
+            // If the same category has been used twice, pick a different category
+            const newCategoryOptions = ['negative', 'zero', 'positive'].filter(cat => cat !== previousAngleCategory);
+            angleCategory = newCategoryOptions[Math.floor(Math.random() * newCategoryOptions.length)];
+        } else {
+            // Otherwise, choose a random category
+            angleCategory = ['negative', 'zero', 'positive'][Math.floor(Math.random() * 3)];
+        }
+
+        // Set the angle based on the selected category
+        if (angleCategory === 'negative') {
+            angle = Math.floor(Math.random() * -5) - 1; // Random from -5 to -1
+        } else if (angleCategory === 'zero') {
+            angle = 0;
+        } else {
+            angle = Math.floor(Math.random() * 5) + 1; // Random from 1 to 5
+        }
+
+        // Update consecutive counts and category
+        if (angleCategory === previousAngleCategory) {
+            consecutiveCount++;
+        } else {
+            consecutiveCount = 1;
+        }
+        previousAngleCategory = angleCategory;
+
+        return angle;
     }
 
     // Function to load a new card with a random emoji
@@ -123,6 +176,14 @@
         refreshBtn.classList.remove('active'); // Disable and reduce opacity
         refreshBtn.disabled = true;
         erasedPixels = 0; // Reset erased pixels count
+
+        // Trigger the slide-in animation with a random rotation angle
+        const randomAngle = getRandomAngle();
+        cardContainer.style.setProperty('--rotate-angle', `${randomAngle}deg`);
+        cardContainer.classList.remove('fadeOut');
+        setTimeout(() => {
+            cardContainer.classList.add('slideIn');
+        }, 10); // Small delay for smoother animation
     }
 
     // Initialize canvas with gray cover
@@ -214,11 +275,20 @@
         }
     }
 
-    // Event listener for the refresh button
-    refreshBtn.addEventListener('click', loadNewCard);
+    // Refresh button click event
+    refreshBtn.addEventListener('click', () => {
+        cardContainer.classList.remove('slideIn');
+        cardContainer.classList.add('fadeOut');
 
-    // Load the initial card
-    loadNewCard();
+        setTimeout(() => {
+            loadNewCard();
+        }, 500); // Wait for fade-out to complete before loading new card
+    });
+
+    // Initial card load
+    window.onload = () => {
+        loadNewCard();
+    };
 </script>
 
 </body>
