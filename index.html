@@ -119,13 +119,14 @@
             position: absolute;
             top: 0;
             left: 0;
-            border-radius: 8px;
+            border-radius: 4px;
             z-index: 1; /* Ensure canvas is above the emoji */
         }
 
         /* Emoji */
         .emoji {
-            background-color: lightblue;
+            background-image: url('images/Scratch_Off_Area_No_Crop.png');
+            background-size: cover;
             font-size: 64px;
             z-index: 0; /* Ensure emoji is under the canvas */
             position: absolute;
@@ -138,6 +139,20 @@
             border-bottom-right-radius: 8px; /* Bottom right corner radius */
             
         }
+  
+  /* For high-density (2x) displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .emoji {
+        background-image: url('image@2x.png');
+    }
+}
+
+/* For extra-high-density (3x) displays */
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+    .emoji {
+        background-image: url('image@3x.png');
+    }
+}
 
         /* Refresh button */
         .refreshBtn {
