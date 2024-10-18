@@ -108,6 +108,8 @@
 
         /* Updated Scratch Off Area */
         .scratchArea {
+            background-image: url('images/Scratch_Off_Area_No_Crop.png'); /* Default image */
+            background-size: cover;
             width: 214px; /* Updated width */
             height: 412px; /* Updated height */
             border-top-left-radius: 999px; /* Top left corner radius */
@@ -128,8 +130,6 @@
 
     /* Emoji under the canvas */
     .emoji {
-        background-image: url('images/Scratch_Off_Area_No_Crop.png'); /* Default image */
-        background-size: cover;
         font-size: 24px;
         text-align: center;
         font-family: "Poppins", sans-serif;
@@ -149,14 +149,14 @@
     
     /* For high-density (2x) displays */
     @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-        .emoji {
+        .scratchArea {
             background-image: url('images/Scratch_Off_Area_No_Crop@2x.png'); /* @2x image for Retina displays */
         }
     }
     
     /* For extra-high-density (3x) displays */
     @media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
-        .emoji {
+        .scratchArea {
             background-image: url('images/Scratch_Off_Area_No_Crop@3x.png'); /* @3x image for high-density displays */
         }
     }
